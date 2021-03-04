@@ -80,7 +80,9 @@ func (pp *pbproto) Pack(m erpc.Message) error {
 	xferPipeLen := m.XferPipe().Len()
 
 	// set size
-	m.SetSize(uint32(1 + xferPipeLen + len(b)))
+	if err = m.SetSize(uint32(1 + xferPipeLen + len(b))); err != nil {
+		return err
+	}
 
 	// pack
 	var all = make([]byte, m.Size()+4)

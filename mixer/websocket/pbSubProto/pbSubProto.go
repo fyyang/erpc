@@ -60,7 +60,9 @@ func (psp *pbSubProto) Pack(m erpc.Message) error {
 		return err
 	}
 
-	m.SetSize(uint32(len(b)))
+	if err = m.SetSize(uint32(len(b))); err != nil {
+		return err
+	}
 
 	_, err = psp.rw.Write(b)
 	return err
@@ -76,7 +78,9 @@ func (psp *pbSubProto) Unpack(m erpc.Message) error {
 		return err
 	}
 
-	m.SetSize(uint32(len(b)))
+	if err = m.SetSize(uint32(len(b))); err != nil {
+		return err
+	}
 
 	s := &pb.Payload{}
 	err = codec.ProtoUnmarshal(b, s)

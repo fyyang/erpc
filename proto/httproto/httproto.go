@@ -161,7 +161,10 @@ func (h *httproto) Pack(m erpc.Message) (err error) {
 	if err != nil {
 		return err
 	}
-	m.SetSize(uint32(bb.Len()))
+	if err = m.SetSize(uint32(bb.Len())); err != nil {
+		return err
+	}
+
 	if h.printMessage {
 		erpc.Printf("Send HTTP Message:\n%s", goutil.BytesToString(bb.B))
 	}
@@ -284,7 +287,9 @@ func (h *httproto) Unpack(m erpc.Message) error {
 				goutil.BytesToString(firstLine), goutil.BytesToString(msg))
 		}
 		size += len(firstLine)
-		m.SetSize(uint32(size))
+		if err = m.SetSize(uint32(size)); err != nil {
+			return err
+		}
 		if ok {
 			return m.UnmarshalBody(bb.B)
 		}
@@ -315,7 +320,9 @@ func (h *httproto) Unpack(m erpc.Message) error {
 			goutil.BytesToString(firstLine), goutil.BytesToString(msg))
 	}
 	size += len(firstLine)
-	m.SetSize(uint32(size))
+	if err = m.SetSize(uint32(size)); err != nil {
+		return err
+	}
 	return m.UnmarshalBody(bb.B)
 }
 
@@ -397,6 +404,11 @@ func (h *httproto) unpack(m erpc.Message, bb *utils.ByteBuffer) (size int, msg [
 	if bodySize == 0 {
 		return size, msg, nil
 	}
+
+	if err = m.SetSize(uint32(bodySize)); err != nil {
+		return 0, nil, err
+	}
+
 	bb.ChangeLen(bodySize)
 	_, err = io.ReadFull(h.rw, bb.B)
 	if err != nil {

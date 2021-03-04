@@ -143,8 +143,7 @@ func (r *rawProto) Pack(m Message) error {
 	bb.B = append(bb.B[:prefixLen], payload...)
 
 	// set and check message size
-	err = m.SetSize(uint32(bb.Len()))
-	if err != nil {
+	if err = m.SetSize(uint32(bb.Len())); err != nil {
 		return err
 	}
 

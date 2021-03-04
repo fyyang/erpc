@@ -74,7 +74,9 @@ func (j *jsonSubProto) Pack(m erpc.Message) error {
 
 	b := goutil.StringToBytes(s)
 
-	m.SetSize(uint32(len(b)))
+	if err = m.SetSize(uint32(len(b))); err != nil {
+		return err
+	}
 
 	_, err = j.rw.Write(b)
 	return err
@@ -90,7 +92,9 @@ func (j *jsonSubProto) Unpack(m erpc.Message) error {
 		return err
 	}
 
-	m.SetSize(uint32(len(b)))
+	if err = m.SetSize(uint32(len(b))); err != nil {
+		return err
+	}
 
 	s := goutil.BytesToString(b)
 
